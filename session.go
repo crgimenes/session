@@ -64,16 +64,14 @@ func (c *Control) Save(w http.ResponseWriter, id string, sessionData *SessionDat
 		Value:   id,
 		Expires: expireAt,
 	}
+
 	sessionData.ExpireAt = expireAt
-
-	//sessionData.Payload = ...
-
 	c.SessionDataMap[id] = *sessionData
 
 	http.SetCookie(w, cookie)
 }
 
-func (c *Control) Create() (*SessionData, string) {
+func (c *Control) Create() (string, *SessionData) {
 	sessionData := &SessionData{
 		ExpireAt: time.Now().Add(3 * time.Hour),
 	}
