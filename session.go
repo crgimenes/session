@@ -6,18 +6,19 @@ import (
 	"time"
 )
 
-const cookieName = "draft"
-
-type SessionData struct {
-	ExpireAt time.Time
-}
-
 type Control struct {
+	cookieName     string
 	SessionDataMap map[string]SessionData
 }
 
-func New() *Control {
+type SessionData struct {
+	ExpireAt time.Time
+	Data     any
+}
+
+func New(cookieName string) *Control {
 	return &Control{
+		cookieName:     cookieName,
 		SessionDataMap: make(map[string]SessionData),
 	}
 }
@@ -28,7 +29,7 @@ func (c *Control) Get(r *http.Request) (string, *SessionData, bool) {
 		return "", nil, false
 	}
 
-	cookie, err := r.Cookie(cookieName)
+	cookie, err := r.Cookie(c.cookieName)
 	if err != nil {
 		return "", nil, false
 	}
@@ -49,7 +50,7 @@ func (c *Control) Get(r *http.Request) (string, *SessionData, bool) {
 func (c *Control) Delete(w http.ResponseWriter, id string) {
 	delete(c.SessionDataMap, id)
 	cookie := http.Cookie{
-		Name:   cookieName,
+		Name:   c.cookieName,
 		Value:  "",
 		MaxAge: -1,
 	}
@@ -59,7 +60,7 @@ func (c *Control) Delete(w http.ResponseWriter, id string) {
 func (c *Control) Save(w http.ResponseWriter, id string, sessionData *SessionData) {
 	expireAt := time.Now().Add(3 * time.Hour)
 	cookie := &http.Cookie{
-		Name:    cookieName,
+		Name:    c.cookieName,
 		Value:   id,
 		Expires: expireAt,
 	}
