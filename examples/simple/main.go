@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
+	"text/template"
 	"time"
 
 	"crg.eti.br/go/session"
@@ -11,6 +13,9 @@ import (
 
 var (
 	sc *session.Control
+
+	//go:embed assets/*
+	assets embed.FS
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +28,25 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// renew session
 	sc.Save(w, sid, sd)
 
-	http.Redirect(w, r, "/payments", http.StatusFound)
+	//////////////////////////
+
+	index, err := assets.ReadFile("assets/index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	t, err := template.New("index.html").Parse(string(index))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// exec template
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// http.Redirect(w, r, "/payments", http.StatusFound)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
