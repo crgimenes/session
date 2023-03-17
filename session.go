@@ -76,7 +76,7 @@ func (c *Control) Create() (string, *SessionData) {
 		ExpireAt: time.Now().Add(3 * time.Hour),
 	}
 
-	return sessionData, RandomID()
+	return RandomID(), sessionData
 }
 
 func (c *Control) RemoveExpired() {

@@ -51,7 +51,21 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		http.ServeFile(w, r, "login.html")
+		index, err := assets.ReadFile("assets/login.html")
+		if err != nil {
+			log.Fatal(err)
+		}
+		t, err := template.New("login.html").Parse(string(index))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// exec template
+		err = t.Execute(w, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		return
 	}
 
@@ -62,6 +76,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// save session
 	sc.Save(w, sid, sd)
+
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
