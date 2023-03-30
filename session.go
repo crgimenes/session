@@ -66,7 +66,7 @@ func (c *Control) Save(w http.ResponseWriter, id string, sessionData *SessionDat
 		Expires:  expireAt,
 		Secure:   true,
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteDefaultMode,
 	}
 
 	sessionData.ExpireAt = expireAt
