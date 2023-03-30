@@ -60,9 +60,13 @@ func (c *Control) Delete(w http.ResponseWriter, id string) {
 func (c *Control) Save(w http.ResponseWriter, id string, sessionData *SessionData) {
 	expireAt := time.Now().Add(3 * time.Hour)
 	cookie := &http.Cookie{
-		Name:    c.cookieName,
-		Value:   id,
-		Expires: expireAt,
+		Path:     "/",
+		Name:     c.cookieName,
+		Value:    id,
+		Expires:  expireAt,
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	sessionData.ExpireAt = expireAt
